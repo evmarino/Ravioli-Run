@@ -11,18 +11,18 @@ class Play extends Phaser.Scene{
     }
 
     create(){
-
-        this.background = this.add.image(0,0,'background').setOrigin(0,0)
+       // tile sprite
+        this.background = this.add.tileSprite(0,0, 640, 480, 'background').setOrigin(0,0)
 
         //define keys 
         keyRESET = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R)
         keyJUMP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
 
-         //sprite animation
-       /* const walk = {
+        //sprite animation
+        const walk = {
         key: 'walk',
         frames: this.anims.generateFrameNumbers('can', {start:0, end: 2}),
-        frameRate: 16,
+        frameRate: 10,
         repeat: -1
     }
         const idle = {
@@ -41,27 +41,42 @@ class Play extends Phaser.Scene{
 
    this.anims.create(walk)
    this.anims.create(idle)
-   this.anims.create(jump)*/
+   this.anims.create(jump)
    
-   //this.player.play('walk', true)
-
 
         
-        //add player
-        console.log("🛠 Creating Player...");
-       
-       this.player = this.add.sprite(100, 400, 'can', 0);
-        console.log("Player created successfully:", this.player);
-        
-       
+    //add player
+    this.player = this.physics.add.sprite(100, 350, 'can').setScale(1.5)
+    this.player.body.setGravityY(600)
+
+    this.player.play('walk', true)
+
+
+    //floor 
+   
+    this.floor = this.add.rectangle(this.player.x, this.player.y + 99, game.config.width +100, borderUISize *2, 0x9D9C9D).setOrigin(0.13,0)
+    this.physics.add.existing(this.floor, true)
+    this.physics.add.collider(this.player, this.floor)
+    
+
     }
     update(){
-    if(this.player){
-        this.player.update()
+
+        //moving background
+        this.background.tilePositionX += 4
+
+        //player jumping and walking animation with space bar
+        if(Phaser.Input.Keyboard.JustDown(keyJUMP) && this.player.body.touching.down){
+            this.player.play('jump', true) 
+            this.playerJumps()
+        } 
+        
+        else if (this.player.body.touching.down && this.player.anims.currentAnim.key !== 'walk'){
+            this.player.play('walk',true)
+        }
     }
     
-        
+    playerJumps(){
+        this.player.setVelocityY(-400)
     }
-
-}
-
+    }

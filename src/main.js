@@ -11,7 +11,7 @@ let config = {
     physics: { 
         default: "arcade",
         arcade: {
-            gravity: { y: 0 }, // Adjust gravity if needed
+            gravity: { y: 0}, // Adjust gravity if needed
             debug: true // Enable debug mode to see physics
         } 
     } ,
@@ -22,3 +22,5 @@ let game = new Phaser.Game(config)
 
 //reserve keyboard bindings
 let keyRESET, keyJUMP
+let borderUISize = game.config.height / 20
+let borderPadding = borderUISize
