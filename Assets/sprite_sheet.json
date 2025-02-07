@@ -1,0 +1,44 @@
+{
+  "sprites": [
+    {
+      "fileName": "1st run.png",
+      "width": 4096,
+      "height": 1714,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "fileName": "2nd run.png",
+      "width": 4096,
+      "height": 1714,
+      "x": 4096,
+      "y": 0
+    },
+    {
+      "fileName": "3rd run.png",
+      "width": 4096,
+      "height": 1714,
+      "x": 8192,
+      "y": 0
+    },
+    {
+      "fileName": "idle sprite.png",
+      "width": 4096,
+      "height": 1714,
+      "x": 0,
+      "y": 1714
+    },
+    {
+      "fileName": "jump sprite.png",
+      "width": 4096,
+      "height": 1714,
+      "x": 4096,
+      "y": 1714
+    }
+  ],
+  "packMode": "grid",
+  "padding": 0,
+  "backgroundColor": "rgba(0, 0, 0, 0)",
+  "spriteSheetWidth": 12288,
+  "spriteSheetHeight": 3428
+}
