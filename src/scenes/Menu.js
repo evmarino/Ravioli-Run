@@ -8,17 +8,17 @@ class Menu extends Phaser.Scene{
         this.load.image('obstacle', './Assets/obstacle.png')
         this.load.image('background', './Assets/background.png')
         this.load.image('menuscreen','./Assets/titlescreen.png')
-        this.load.atlas('can', './Assets/sprite_sheet.png',
-            './Assets/sprite_sheet.json'
-        )
+        
     }
   create(){
-    //animation configuration 
+    // starting screen load in 
     this.menuscreen= this.add.image(0,0,'menuscreen').setOrigin(0,0)
     this.input.once('pointerdown', () =>  {
         this.scene.start("playScene")
-  });
 
+    });
+    
+    
     //define keys 
     keyRESET = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R)
     keyJUMP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
