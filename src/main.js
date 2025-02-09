@@ -11,11 +11,11 @@ let config = {
     physics: { 
         default: "arcade",
         arcade: {
-            gravity: { y: 0}, // Adjust gravity if needed
+            gravity: { y: 1400}, // Adjust gravity if needed
             debug: true // Enable debug mode to see physics
         } 
     } ,
-    scene:[Menu, Play]
+    scene:[Menu, Play, GameOver]
 };
 
 let game = new Phaser.Game(config)
