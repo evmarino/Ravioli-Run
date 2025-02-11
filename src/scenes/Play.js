@@ -5,7 +5,7 @@ class Play extends Phaser.Scene {
 
     preload(){
         this.load.spritesheet('can', './Assets/sprite_sheet.png', { frameWidth: 315, frameHeight:132 ,
-        });
+        })
     }
 
     create() {
@@ -14,7 +14,7 @@ class Play extends Phaser.Scene {
         this.backgroundSpeed = 4
 
        
-        this.backgroundMusic = this.sound.add('loopingmusic', {loop: true});
+        this.backgroundMusic = this.sound.add('loopingmusic', {loop: true})
         this.deathNoise = this.sound.add('death')
         this.backgroundMusic.setVolume(0.2)
         this.backgroundMusic.play()
@@ -42,12 +42,12 @@ class Play extends Phaser.Scene {
         this.time.addEvent({
             delay: 1000, 
             callback: () => {
-                this.elapsedTime += 1;  
-                this.scoreText.setText(`Time ran (in secs): ${this.score}`);
+                this.elapsedTime += 1 
+                this.scoreText.setText(`Time ran (in secs): ${this.score}`)
             },
             callbackScope: this,
             loop: true
-        });
+        })
         
 
         // define keys 
@@ -56,9 +56,9 @@ class Play extends Phaser.Scene {
 
        
       
-       this.player = new Player(this, 100, 350).setScale(0.5).setSize(60, 125);
+       this.player = new Player(this, 100, 350).setScale(0.5).setSize(60, 125)
        this.add.existing(this.player);
-       this.physics.add.existing(this.player);
+       this.physics.add.existing(this.player)
 
         // walk animation on
         this.player.play('walk', true)
@@ -73,7 +73,7 @@ class Play extends Phaser.Scene {
         // invisible floor for player collision
         this.floor = this.add.rectangle(this.player.x, this.player.y + 99, game.config.width + 100, borderUISize * 2, 0x9D9C9D).setOrigin(0.13, 0)
         this.physics.add.existing(this.floor, true)
-        this.physics.add.collider(this.player, this.floor);
+        this.physics.add.collider(this.player, this.floor)
 
         
         this.barrier = this.add.rectangle(this.player.x, this.player.y + 99, game.config.width + 100, borderUISize * 2, 0x9D9C9D).setOrigin(0.13, 7)
@@ -87,11 +87,8 @@ class Play extends Phaser.Scene {
             callbackScope: this,
             loop: true
         })
-
-        
         this.spawnObstacle()
 
-        
     }
        
     update() {
@@ -129,10 +126,10 @@ class Play extends Phaser.Scene {
         // cleanup obstacles
         this.obstacles.forEach((obstacle, index) => {
             if (obstacle.x <= -50) {
-                obstacle.destroy();  
-                this.obstacles.splice(index, 1); 
+                obstacle.destroy()  
+                this.obstacles.splice(index, 1)
             }
-        });
+        })
     }
 
     increaseDifficulty(){
@@ -148,7 +145,7 @@ class Play extends Phaser.Scene {
 
     obstacleCollision() {
         if(!this.gameOver && this.backgroundMusic ) {
-        this.gameOver = true;
+        this.gameOver = true
         this.player.setVelocity(0, 0);
         
        
@@ -165,9 +162,9 @@ class Play extends Phaser.Scene {
     }
             
      this.time.delayedCall(1000, () => {
-        this.backgroundMusic.stop();
+        this.backgroundMusic.stop()
         this.sound.play('death')
-        this.scene.start("gameoverScene", {timeElapsed: this.elapsedTime});
+        this.scene.start("gameoverScene", {timeElapsed: this.elapsedTime})
         }, [], this);
     }
 

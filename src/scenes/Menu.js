@@ -26,7 +26,7 @@ class Menu extends Phaser.Scene{
         this.input.once('pointerdown', () =>  {
             this.sound.play('click')
             this.scene.start("playScene")
-    },)
+    })
 
 
     

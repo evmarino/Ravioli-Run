@@ -54,7 +54,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         
     }
 
-
 update()
 {
 // player jumping
@@ -67,12 +66,10 @@ if (Phaser.Input.Keyboard.JustDown(keyJUMP) && this.jumpCount < 2) {
         this.jumpCount = 0
 }
 
-
 }
 playerJumps() 
 {
 this.setVelocityY(-650)
 this.jumpSound.play()
 }
-
 }
