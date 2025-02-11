@@ -18,7 +18,7 @@ class GameOver extends Phaser.Scene {
         this.add.tileSprite(0,0,640, 480, 'gameOver').setOrigin(0, 0);
         
         this.gameoverText = this.add.text(140,123,'GAME OVER ', { fontSize: '60px', fill: '#FFF', fontFamily: 'Comic Sans MS', style: 'bold', backgroundColor: '#FFBD16' })
-        this.gameoverText = this.add.text(90,250,'press M for main menu or click aywhere to restart ', { fontSize: '19px', fill: '#FFF', fontFamily: 'Comic Sans MS', style: 'bold', backgroundColor: '#FFBD16' })
+        this.gameoverText = this.add.text(90,250,'press M for main menu or click anywhere to restart ', { fontSize: '19px', fill: '#FFF', fontFamily: 'Comic Sans MS', style: 'bold', backgroundColor: '#FFBD16' })
 
         this.add.text(50, 200, `You escaped the grocery store for ${timeRan} seconds!`, 
             { fontSize: '23px', fill: '#ED7014', fontFamily: 'Comic Sans MS', fontStyle: 'bold', backgroundColor: '#FFF' });
