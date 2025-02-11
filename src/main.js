@@ -11,8 +11,8 @@ let config = {
     physics: { 
         default: "arcade",
         arcade: {
-            gravity: { y: 1400}, // Adjust gravity if needed
-            debug: true // Enable debug mode to see physics
+            gravity: { y: 1400}, 
+            debug: false
         } 
     } ,
     scene:[Menu, Play, GameOver]

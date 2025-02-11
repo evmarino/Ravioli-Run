@@ -11,147 +11,166 @@ class Play extends Phaser.Scene {
     create() {
         // tile sprite
         this.background = this.add.tileSprite(0, 0, 640, 480, 'background').setOrigin(0, 0)
+        this.backgroundSpeed = 4
+
+       
+        this.backgroundMusic = this.sound.add('loopingmusic', {loop: true});
+        this.deathNoise = this.sound.add('death')
+        this.backgroundMusic.setVolume(0.2)
+        this.backgroundMusic.play()
+        
+        this.tweens.add({
+            targets: this.backgroundMusic,
+            volume: 0.3,
+            duration: 3000,
+            ease: 'Linear'
+        })
+
+
+        // time elapsed 
+        this.score = 0
+        this.elapsedTime = 0
+        this.scoreText = this.add.text(20, 20,'Time ran (in secs): 0', { fontSize: '24px', fill: '#FFF', fontFamily: 'Comic Sans MS'})
+        this.scoreText.setVisible(false)
+        this.insructText = this.add.text(10,300,'Press space to avoid obstacles! ', { fontSize: '20px', fill: '#FFF', fontFamily: 'Comic Sans MS' })
+
+        this.time.delayedCall(5000, () => {
+            this.insructText.destroy()
+        }, [], this)
+
+
+        this.time.addEvent({
+            delay: 1000, 
+            callback: () => {
+                this.elapsedTime += 1;  
+                this.scoreText.setText(`Time ran (in secs): ${this.score}`);
+            },
+            callbackScope: this,
+            loop: true
+        });
+        
 
         // define keys 
-        keyRESET = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R)
+        keyRESET = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.m)
         keyJUMP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
 
-        // load player into game
-        this.player = this.physics.add.sprite(100, 350, 'can').setScale(0.5).setSize(60, 125)
-        this.player.body.setGravityY(600)
-
-        // sprite animations (unchanged from your code)
-        const walk = {
-            key: 'walk',
-            frames: this.anims.generateFrameNumbers('can', {
-               frames: [0,0,0,1,1,2,2,] }),
-            frameRate: 24,
-            repeat: -1
-        }
-        const idle = {
-            key: 'idle',
-            frames: [{ key: 'can', frame: 3 }],
-            frameRate: 1,
-            repeat: -1
-        }
-        const jump = {
-            key: 'jump',
-            frames: [{ key: 'can', frame: 4 }],
-            frameRate: 1,
-            repeat: 0
-        }
-
-        if (!this.anims.exists('walk')) this.anims.create(walk)
-        if (!this.anims.exists('idle')) this.anims.create(idle)
-        if (!this.anims.exists('jump')) this.anims.create(jump)
+       
+      
+       this.player = new Player(this, 100, 350).setScale(0.5).setSize(60, 125);
+       this.add.existing(this.player);
+       this.physics.add.existing(this.player);
 
         // walk animation on
         this.player.play('walk', true)
+        this.player.body.setGravityY(600)
 
         // game over flag
         this.gameOver = false
-
-        // tracking active obstacles to prevent overlap
         this.obstacles = []
+        this.obstacleSpeed = -200
+        this.spawnInterval = 3500
 
         // invisible floor for player collision
         this.floor = this.add.rectangle(this.player.x, this.player.y + 99, game.config.width + 100, borderUISize * 2, 0x9D9C9D).setOrigin(0.13, 0)
         this.physics.add.existing(this.floor, true)
         this.physics.add.collider(this.player, this.floor);
 
-        // jumping barrier collision
+        
         this.barrier = this.add.rectangle(this.player.x, this.player.y + 99, game.config.width + 100, borderUISize * 2, 0x9D9C9D).setOrigin(0.13, 7)
         this.barrier.setAlpha(0)
         this.physics.add.existing(this.barrier, true)
         this.physics.add.collider(this.player, this.barrier)
 
-        // spawn first set of obstacles
-        this.spawnObstacle()
-        this.spawnCar()
-
-
-    }
-
-    update() {
-        // moving background
-        this.background.tilePositionX += 4
-
-        // player jumping
-        if (Phaser.Input.Keyboard.JustDown(keyJUMP)) {
-            this.player.play('jump', true)
-            this.playerJumps()
-        } else if (this.player.body.touching.down && this.player.anims.currentAnim.key !== 'walk') {
-            this.player.play('walk', true)
-        }
-        // cleanup old obstacles
-        this.obstacles = this.obstacles.filter(obstacle => obstacle.x > -50)
+        this.time.addEvent({
+            delay: 10000,
+            callback: this.increaseDifficulty,
+            callbackScope: this,
+            loop: true
+        })
 
         
-        }
+        this.spawnObstacle()
 
-    spawnCar() {
-        let minSpace = 150 // space between obstacles
-        let carY = game.config.height - borderUISize - 60
-        let carX = game.config.width + Phaser.Math.Between(50, 200)
-
-        // ensure no overlap with existing obstacles
-        if (this.obstacles.some(obstacle => Math.abs(obstacle.x - carX) < minSpace)) {
-            return
-        }
-
-        let car = this.physics.add.sprite(carX, carY, 'car').setScale(2.3).setSize(118, 30)
-        car.body.setVelocityX(-200)
-        car.body.setImmovable(true)
-        car.body.allowGravity = false
-
-        this.physics.add.collider(this.player, car, this.carCollision, null, this)
-        this.obstacles.push(car) // track obstacle
-
-        // spawn next car after delay
-        this.time.delayedCall(Phaser.Math.Between(2000, 3000), this.spawnCar, [], this)
+        
     }
+       
+    update() {
+    
+        // moving background
+        this.background.tilePositionX += this.backgroundSpeed
+        this.player.update()
+        
+        }
 
     spawnObstacle() {
         let minSpace = 150 // space between obstacles
         let obstacleY = game.config.height - borderUISize - 50
         let obstacleX = game.config.width + Phaser.Math.Between(60, 150)
 
-        // ensure no overlap with existing obstacles
+        //  no overlap with  obstacles
         if (this.obstacles.some(obstacle => Math.abs(obstacle.x - obstacleX) < minSpace)) {
             return
         }
 
-        let obstacle = this.physics.add.sprite(obstacleX, obstacleY, 'obstacle').setScale(0.7).setSize(85, 95)
-        obstacle.body.setVelocityX(-200)
+        let obstacle = this.physics.add.sprite(obstacleX, obstacleY, 'obstacle').setScale(0.7).setSize(65, 85)
+        obstacle.body.setVelocityX(this.obstacleSpeed)
         obstacle.body.setImmovable(true)
         obstacle.body.allowGravity = false
 
         this.physics.add.collider(this.player, obstacle, this.obstacleCollision, null, this)
         this.obstacles.push(obstacle) // track obstacle
 
-        // spawn next obstacle after delay
-        this.time.delayedCall(Phaser.Math.Between(2500, 4000), this.spawnObstacle, [], this)
+        let nextSpawn = Phaser.Math.Clamp(this.spawnInterval, 800, 4000)
+
+
+        // spawn next obs
+        this.time.delayedCall(this.spawnInterval, this.spawnObstacle, [], this)
+
+        // cleanup obstacles
+        this.obstacles.forEach((obstacle, index) => {
+            if (obstacle.x <= -50) {
+                obstacle.destroy();  
+                this.obstacles.splice(index, 1); 
+            }
+        });
     }
 
-    carCollision() {
-        this.gameOver = true;
-        this.player.setVelocity(0, 0); // Stop player movement
-    
-        this.time.delayedCall(1000, () => {
-            this.scene.start("gameoverScene");
-        }, [], this);
+    increaseDifficulty(){
+        this.backgroundSpeed += 0.5
+        this.obstacleSpeed -=20
+        this.spawnInterval = Math.max(this.spawnInterval - 300, 800)
+
+        this.obstacles.forEach(obstacle =>{
+            if(obstacle.active)
+            obstacle.body.setVelocityX(this.obstacleSpeed)
+        })
     }
-    
+
     obstacleCollision() {
+        if(!this.gameOver && this.backgroundMusic ) {
         this.gameOver = true;
-        this.player.setVelocity(0, 0); // Stop player movement
-    
-        this.time.delayedCall(1000, () => {
-            this.scene.start("gameoverScene");
+        this.player.setVelocity(0, 0);
+        
+       
+     {
+        this.tweens.add({
+        targets: this.backgroundMusic,
+        volume: 0,
+        ease: 'Linear',
+        onComplete: () => {
+        this.backgroundMusic.stop();
+                
+        }
+        })
+    }
+            
+     this.time.delayedCall(1000, () => {
+        this.backgroundMusic.stop();
+        this.sound.play('death')
+        this.scene.start("gameoverScene", {timeElapsed: this.elapsedTime});
         }, [], this);
     }
 
-    playerJumps() {
-        this.player.setVelocityY(-600)
-    }
+}
+
 }
